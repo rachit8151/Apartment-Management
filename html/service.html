@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - House Management System</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        header .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        header img {
+            height: 50px;
+            margin-right: 10px;
+        }
+        section {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1, h2 {
+            color: #444;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .service-box {
+            flex: 1 1 calc(33.333% - 20px);
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .service-box i {
+            font-size: 50px;
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+        .service-box h3 {
+            color: #555;
+            margin: 10px 0;
+        }
+        .service-box p {
+            font-size: 14px;
+            color: #666;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #333;
+            color: white;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .service-box {
+                flex: 1 1 calc(50% - 20px);
+            }
+        }
+        @media (max-width: 500px) {
+            .service-box {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<section>
+    <h2>Our Services</h2>
+    <p>
+        The House Management System offers a wide range of services to make managing your residential and community spaces easier and more efficient. Explore our key services below:
+    </p>
+
+    <div class="services">
+        <div class="service-box">
+            <i class="fas fa-calendar-check"></i>
+            <h3>Event & Hall Bookings</h3>
+            <p>
+                Reserve halls and schedule events effortlessly with our intuitive booking system.
+            </p>
+        </div>
+        <div class="service-box">
+            <i class="fas fa-tools"></i>
+            <h3>Maintenance Requests</h3>
+            <p>
+                Submit and track maintenance requests to ensure timely resolutions.
+            </p>
+        </div>
+        <div class="service-box">
+            <i class="fas fa-bullhorn"></i>
+            <h3>Community Announcements</h3>
+            <p>
+                Stay informed with important updates and announcements directly on the platform.
+            </p>
+        </div>
+        <div class="service-box">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <h3>Expense Tracking</h3>
+            <p>
+                Keep detailed records of expenses to manage your budget effectively.
+            </p>
+        </div>
+        <div class="service-box">
+            <i class="fas fa-users"></i>
+            <h3>User Management</h3>
+            <p>
+                Add, edit, and manage users with roles and permissions tailored to your needs.
+            </p>
+        </div>
+        <div class="service-box">
+            <i class="fas fa-chart-line"></i>
+            <h3>Comprehensive Reports</h3>
+            <p>
+                Generate detailed reports to analyze data and track progress effortlessly.
+            </p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2024 House Management System. All rights reserved.</p>
+</footer>
+</body>
+</html>

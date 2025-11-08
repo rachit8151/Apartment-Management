@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Project Setup Instructions</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                color: #333;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                color: #2c3e50;
+                text-align: center;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            ol {
+                margin: 20px 0;
+                padding-left: 20px;
+            }
+            .contact {
+                text-align: center;
+                margin-top: 30px;
+            }
+            .contact a {
+                color: #2980b9;
+                text-decoration: none;
+            }
+            /* hide buttom */
+            @media print {
+                .button {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Project Setup Instructions</h1>
+            <ol>
+                <li>Download the ZIP file of the project.</li>
+                <li>Extract the project into <code>C:\xampp\htdocs</code>.</li>
+                <li>Go to <a href="http://localhost/phpmyadmin/" target="_blank">http://localhost/phpmyadmin/</a> and import the database from <code>(dbFile\db_project.sql)</code>.</li>
+                <li>In your browser, go to <a href="http://localhost/DB_PROJECT/login.php" target="_blank">http://localhost/DB_PROJECT/login.php</a> to start working.</li>
+                <li>If you have any questions or need changes, please suggest via <a href="https://wa.me/9081616891" target="_blank">WhatsApp</a>.</li>
+            </ol>
+        </div>
+        <div class="contact">
+            <p>Need assistance? Reach out anytime!</p>
+        </div>
+
+        <div class="button">
+            <button onclick="window.print()">Print Result</button>
+        </div>
+
+    </body>
+</html>
