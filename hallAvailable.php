@@ -1,44 +1,38 @@
-<?php 
+<?php
 session_start();
 require 'dbFile/database.php';
 
 if (empty($_SESSION['username'])) {
-    header("location: login.php");
-    exit();
+    echo json_encode(['status'=>'error','msg'=>'Unauthorized']);
+    exit;
 }
 
-$message = ''; // For displaying messages
-
-// Handle hide/show actions
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['hall_name'])) {
-    $hallName = mysqli_real_escape_string($conn, $_POST['hall_name']);
-    $action = $_POST['action'];
-
-    // Check if hall exists
-    $sqlCheck = "SELECT * FROM tblHalls WHERE hall_name = '$hallName'";
-    $resultCheck = mysqli_query($conn, $sqlCheck);
-
-    if (!$resultCheck) {
-        die("Database query failed: " . mysqli_error($conn));
-    }
-
-    if (mysqli_num_rows($resultCheck) == 0) {
-        $message = "Hall does not exist.";
-    } else {
-        // Use a single query to avoid multiple calls to the database
-        $newVisibility = ($action === 'hide') ? 0 : 1;
-        $sqlUpdate = "UPDATE tblHalls SET visible = $newVisibility WHERE hall_name = '$hallName'";
-        
-        if (mysqli_query($conn, $sqlUpdate)) {
-            $message = $action === 'hide' ? "Hall hidden successfully." : "Hall shown successfully.";
-        } else {
-            $message = "Error updating hall: " . mysqli_error($conn);
-        }
-    }
-
-    // Redirect to dashboard.php with a message
-    $_SESSION['message'] = $message; // Store the message in session
-    header("location: dashboard.php");
-    exit();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['status'=>'error','msg'=>'Invalid request']);
+    exit;
 }
-?>
+
+$hallName = trim($_POST['hall_name'] ?? '');
+$action   = $_POST['action'] ?? '';
+
+if ($hallName === '' || !in_array($action, ['hide','show'])) {
+    echo json_encode(['status'=>'error','msg'=>'Invalid input']);
+    exit;
+}
+
+$newVisibility = ($action === 'hide') ? 0 : 1;
+
+$check = $conn->query("SELECT hall_id FROM tblHalls WHERE hall_name='$hallName'");
+if ($check->num_rows === 0) {
+    echo json_encode(['status'=>'error','msg'=>'Hall not found']);
+    exit;
+}
+
+$conn->query("UPDATE tblHalls SET visible=$newVisibility WHERE hall_name='$hallName'");
+
+echo json_encode([
+    'status' => 'success',
+    'msg'    => $action === 'hide'
+        ? 'Hall hidden successfully'
+        : 'Hall shown successfully'
+]);

@@ -1,170 +1,112 @@
-<?php 
+<?php
 session_start();
 require 'dbFile/database.php';
 
-if (empty($_SESSION['username'])) {
-    header("location: login.php");
-    exit();
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'msg' => 'Unauthorized']);
+    exit;
 }
 
-// Get user role
-$username = $_SESSION['username'];
-$sqlUser = "SELECT user_role FROM tblUser WHERE username = '$username'";
-$resultUser = mysqli_query($conn, $sqlUser);
-$userData = mysqli_fetch_assoc($resultUser);
-$userRole = $userData['user_role'];
-
-// Handle announcement addition or update
+/* ===== SAVE (AJAX) ===== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['btnNotice'])) {
-        if (isset($_POST['announcement_id'])) {
-            // Update existing announcement
-            getEdit($conn);
-        } else {
-            // Add new announcement
-            getAdd($conn);
-        }
-    }
-}
 
-// Function to add an announcement
-function getAdd($conn) {
-    $date = $_POST['date'];
+    header('Content-Type: application/json');
 
-    // Validate the date
-    if (strtotime($date) < strtotime(date('Y-m-d'))) {
-        echo '<script>alert("You cannot apply a previous date. Please choose a valid date."); window.history.back();</script>';
-        return;
-    }
-
-    $type = mysqli_real_escape_string($conn, $_POST['type']);
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $type = $_POST['type'] ?? '';
+    $title = $_POST['title'] ?? '';
+    $description = $_POST['description'] ?? '';
+    $date = $_POST['date'] ?? '';
     $user_id = $_SESSION['user_id'];
 
-    $sql = "INSERT INTO tblAnnouncement (type, title, description, date, user_id) 
-            VALUES ('$type', '$title', '$description', '$date', $user_id)";
-    
-    if (mysqli_query($conn, $sql)) {
-        echo '<script>alert("Announcement added successfully."); window.location.href="dashboard.php";</script>';
-    } else {
-        echo '<script>alert("Something went wrong with the announcement.");</script>';
+    if (!$type || !$title || !$description || !$date) {
+        echo json_encode(['status' => 'error', 'msg' => 'All fields required']);
+        exit;
     }
-}
 
-// Function to edit an announcement
-function getEdit($conn) {
-    $announcement_id = (int)$_POST['announcement_id']; // Cast to int for safety
-    $date = $_POST['date'];
-
-    // Validate the date
     if (strtotime($date) < strtotime(date('Y-m-d'))) {
-        echo '<script>alert("You cannot apply a previous date. Please choose a valid date."); window.history.back();</script>';
-        return;
+        echo json_encode(['status' => 'error', 'msg' => 'Date cannot be past']);
+        exit;
     }
 
-    $type = mysqli_real_escape_string($conn, $_POST['type']);
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-
-    $sql = "UPDATE tblAnnouncement SET type='$type', title='$title', description='$description', date='$date' WHERE announcement_id=$announcement_id";
-    
-    if (mysqli_query($conn, $sql)) {
-        echo '<script>alert("Announcement updated successfully."); window.location.href="dashboard.php";</script>';
+    if (!empty($_POST['announcement_id'])) {
+        $id = (int) $_POST['announcement_id'];
+        $stmt = $conn->prepare(
+            "UPDATE tblAnnouncement
+             SET type=?, title=?, description=?, `date`=?
+             WHERE announcement_id=?"
+        );
+        $stmt->bind_param("ssssi", $type, $title, $description, $date, $id);
     } else {
-        echo '<script>alert("Something went wrong with the update.");</script>';
+        $stmt = $conn->prepare(
+            "INSERT INTO tblAnnouncement (type,title,description,`date`,user_id)
+             VALUES (?,?,?,?,?)"
+        );
+        $stmt->bind_param("ssssi", $type, $title, $description, $date, $user_id);
     }
+
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'msg' => $stmt->error]);
+    }
+    exit;
 }
 
-// Check if an announcement ID is set for editing
+/* ===== LOAD FORM ===== */
 $announcement = null;
 if (isset($_GET['announcement_id'])) {
-    $announcement_id = (int)$_GET['announcement_id'];
-    $sql = "SELECT * FROM tblAnnouncement WHERE announcement_id = $announcement_id";
-    $result = mysqli_query($conn, $sql);
-    $announcement = mysqli_fetch_assoc($result);
+    $id = (int) $_GET['announcement_id'];
+    $announcement = $conn->query(
+        "SELECT * FROM tblAnnouncement WHERE announcement_id=$id"
+    )->fetch_assoc();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $announcement ? 'Edit Announcement' : 'Add Announcement'; ?></title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        .form-label {
-            font-weight: bold;
-        }
-        .btn-custom {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-custom:hover {
-            background-color: #0056b3;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2 class="text-center mb-4"><?php echo $announcement ? 'Edit Announcement' : 'Add Announcement'; ?></h2>
-        
-        <form method="post">
-            <?php if ($announcement): ?>
-                <input type="hidden" name="announcement_id" value="<?php echo $announcement['announcement_id']; ?>">
-            <?php endif; ?>
+<div class="content-card">
+    <h4 class="text-center mb-4">
+        <?= $announcement ? 'Edit Announcement' : 'Add Announcement' ?>
+    </h4>
 
-            <!-- Type of Announcement -->
-            <div class="form-group">
-                <label for="type" class="form-label">Type:</label>
-                <select id="type" name="type" class="form-control" required>
-                    <option value="">-select-</option>
-                    <option value="meeting" <?php echo $announcement && $announcement['type'] === 'meeting' ? 'selected' : ''; ?>>Meeting</option>
-                    <option value="event" <?php echo $announcement && $announcement['type'] === 'event' ? 'selected' : ''; ?>>Event</option>
-                    <option value="notice" <?php echo $announcement && $announcement['type'] === 'notice' ? 'selected' : ''; ?>>Notice</option>
-                    <option value="message" <?php echo $announcement && $announcement['type'] === 'message' ? 'selected' : ''; ?>>Message</option>
-                </select>
-            </div>
+    <form id="announcementForm">
+        <?php if ($announcement): ?>
+            <input type="hidden" name="announcement_id" value="<?= $announcement['announcement_id'] ?>">
+        <?php endif; ?>
 
-            <!-- Title of Announcement -->
-            <div class="form-group">
-                <label for="title" class="form-label">Title:</label>
-                <input type="text" id="title" name="title" class="form-control" pattern="^[a-zA-Z ]*$" title="Only Characters" value="<?php echo $announcement['title'] ?? ''; ?>" required>
-            </div>
+        <div class="mb-3">
+            <label>Type</label>
+            <select name="type" class="form-select" required>
+                <option value="">-- Select --</option>
+                <?php
+                foreach (['meeting', 'event', 'notice', 'message'] as $t) {
+                    $sel = ($announcement['type'] ?? '') === $t ? 'selected' : '';
+                    echo "<option value='$t' $sel>" . ucfirst($t) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
 
-            <!-- Description of Announcement -->
-            <div class="form-group">
-                <label for="description" class="form-label">Description:</label>
-                <textarea id="description" name="description" class="form-control" rows="4" required><?php echo $announcement['description'] ?? ''; ?></textarea>
-            </div>
+        <div class="mb-3">
+            <label>Title</label>
+            <input name="title" class="form-control" value="<?= $announcement['title'] ?? '' ?>" required>
+        </div>
 
-            <!-- Date of Announcement -->
-            <div class="form-group">
-                <label for="date" class="form-label">Date:</label>
-                <input type="date" id="date" name="date" class="form-control" value="<?php echo $announcement['date'] ?? ''; ?>" required>
-            </div>
+        <div class="mb-3">
+            <label>Description</label>
+            <textarea name="description" class="form-control"
+                required><?= $announcement['description'] ?? '' ?></textarea>
+        </div>
 
-            <!-- Submit Button -->
-            <div class="form-group text-center">
-                <input type="submit" name="btnNotice" class="btn btn-custom" value="<?php echo $announcement ? 'Update Announcement' : 'Add Announcement'; ?>">
-            </div>
-        </form>
-    </div>
+        <div class="mb-4">
+            <label>Date</label>
+            <input type="date" name="date" class="form-control" value="<?= $announcement['date'] ?? '' ?>" required>
+        </div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-</body>
-</html>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="loadPage('announcement.php')">← Back</button>
+            <button type="submit" class="btn btn-primary">
+                <?= $announcement ? 'Update' : 'Add' ?>
+            </button>
+        </div>
+    </form>
+</div>

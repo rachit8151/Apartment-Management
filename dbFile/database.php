@@ -10,7 +10,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
     </head>
     <body>
         <?php
-        $conn = mysqli_connect("localhost", "root", "", "db_project");
+        $conn = mysqli_connect("localhost", "root", "", "dbApartmentManage");
         if (!$conn) {
             die("Connection failed: " . mysqli_connect_error());
         }

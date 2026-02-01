@@ -1,108 +1,71 @@
-<?php 
+<?php
 session_start();
 require 'dbFile/database.php';
 
 if (empty($_SESSION['username'])) {
-    header("location: login.php");
-    exit();
+    exit("Unauthorized");
 }
 
-// Get user role
-$username = $_SESSION['username'];
-$sqlUser = "SELECT user_role FROM tblUser WHERE username = '$username'";
-$resultUser = mysqli_query($conn, $sqlUser);
-$userData = mysqli_fetch_assoc($resultUser);
-$userRole = $userData['user_role']; // Get the user role
+$user_id = $_SESSION['user_id'];
+$roleRes = mysqli_query($conn, "SELECT user_role FROM tblUser WHERE user_id=$user_id");
+$userRole = mysqli_fetch_assoc($roleRes)['user_role'];
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Management</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
-        .containerEve {
-            margin-top: 40px;
-        }
-        .event-container {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-        .event-table th, .event-table td {
-            text-align: center;
-        }
-        .btn-custom {
-            width: 100%;
-        }
-        .alert {
-            margin-top: 20px;
-        }
-        table {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="containerEve">
-        <h1 class="text-center mb-4">Event Management</h1>
-        <div class="event-container">
-            <?php if ($userRole !== 'owner') : ?>
-                <form method="post">
-                    <input type="submit" name="btnAddEvent" value="Add Event" formaction="eventApp.php" class="btn btn-primary">
-                </form>
-            <?php endif; ?>
+
+<div class="content-card">
+    <h3 class="text-center mb-4">Event Management</h3>
+
+    <?php if ($userRole !== 'owner'): ?>
+        <div class="text-end mb-3">
+            <button class="btn btn-primary"
+                onclick="loadPage('eventApp.php')">
+                + Add Event
+            </button>
         </div>
+    <?php endif; ?>
 
-        <?php
-        // Fetch events from the database
-        $sql = "SELECT * FROM tblEvents ORDER BY event_id DESC";
-        $result = mysqli_query($conn, $sql);
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Description</th>
+                    <?php if ($userRole !== 'owner'): ?>
+                        <th>Action</th>
+                    <?php endif; ?>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+            <?php
+            $res = mysqli_query($conn, "SELECT * FROM tblEvents ORDER BY event_date DESC");
+            if (mysqli_num_rows($res) > 0):
+                while ($row = mysqli_fetch_assoc($res)):
+            ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['event_date']) ?></td>
+                    <td><?= htmlspecialchars($row['event_time']) ?></td>
+                    <td><?= htmlspecialchars($row['description']) ?></td>
 
-        if (mysqli_num_rows($result) > 0) {
-            echo '<table class="table table-bordered table-striped event-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Description</th>';
-                            if ($userRole !== 'owner') {
-                                echo '<th>Action</th>';
-                            }
-            echo '</tr>
-                </thead>
-                <tbody>';
+                    <?php if ($userRole !== 'owner'): ?>
+                        <td>
+                            <button class="btn btn-warning btn-sm"
+                                onclick="loadPage('eventApp.php?event_id=<?= $row['event_id'] ?>')">
+                                Edit
+                            </button>
 
-            // Loop through the events and display them
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo '<tr>';
-                echo '<td>' . htmlspecialchars($row['event_date']) . '</td>';
-                echo '<td>' . htmlspecialchars($row['event_time']) . '</td>';
-                echo '<td>' . htmlspecialchars($row['description']) . '</td>';
-                if ($userRole !== 'owner') {
-                    echo '<td>
-                            <a href="eventApp.php?event_id=' . $row['event_id'] . '" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="eventDelete.php?event_id=' . $row['event_id'] . '" 
-                               onclick="return confirm(\'Are you sure you want to delete this event?\');" class="btn btn-danger btn-sm">Delete</a>
-                          </td>';
-                }
-                echo '</tr>';
-            }
-
-            echo '</tbody></table>';
-        } else {
-            echo '<p class="alert alert-info text-center">No events available.</p>';
-        }
-        ?>
+                            <button class="btn btn-danger btn-sm ms-1"
+                                onclick="deleteEvent(<?= $row['event_id'] ?>)">
+                                Delete
+                            </button>
+                        </td>
+                    <?php endif; ?>
+                </tr>
+            <?php endwhile; else: ?>
+                <tr>
+                    <td colspan="4">No events found</td>
+                </tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
     </div>
-
-    <!-- Bootstrap JS & dependencies -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+</div>

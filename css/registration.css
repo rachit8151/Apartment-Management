@@ -1,0 +1,56 @@
+body {
+    font-family: "Poppins", sans-serif;
+    background:
+        linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),
+        url("../img/ApartmentBG.jpg") no-repeat center/cover;
+    min-height: 100vh;
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+}
+
+.auth-card {
+    background: #fff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.25);
+    animation: slideUp .6s ease;
+}
+
+.auth-card.wide {
+    max-width: 720px;
+    width: 100%;
+}
+
+.auth-card h2 {
+    text-align: center;
+    font-weight: 600;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    height: 44px;
+}
+
+.btn-success {
+    border-radius: 10px;
+    font-weight: 500;
+    background: linear-gradient(135deg,#198754,#28a745);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,188 @@
+* {
+    box-sizing: border-box;
+    font-family: "Poppins", Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f6f9;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+    height: 60px;
+    background: #1f2937;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.welcome-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #e5e7eb;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.topbar-actions .btn {
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+}
+
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 240px;
+    background: #020617;
+    height: calc(100vh - 60px);
+    position: fixed;
+    top: 60px;
+    left: 0;
+    padding-top: 15px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    color: #cbd5e1;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidebar button:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+    margin-left: 240px;
+    margin-top: 60px;
+    padding: 25px;
+    min-height: calc(100vh - 60px);
+}
+
+/* ===== USER DROPDOWN ===== */
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: 70px;
+    right: 25px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.user-dropdown button {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* ===== LOADED PAGES ===== */
+.content-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Announcement table polish */
+.table td {
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.content-card h3 {
+    font-weight: 600;
+}
+
+.btn-sm {
+    border-radius: 6px;
+}
+
+.content-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.form-label {
+    font-size: 14px;
+}
+
+.btn {
+    border-radius: 8px;
+}
+
+.user-dropdown-fixed {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.user-dropdown-fixed button {
+    margin-left: 5px;
+}
+
+/* ===== FIX NOTIFICATION TABLE LAYOUT ===== */
+#pageContainer table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse;
+}
+
+#pageContainer thead {
+    display: table-header-group !important;
+}
+
+#pageContainer tbody {
+    display: table-row-group !important;
+}
+
+#pageContainer tr {
+    display: table-row !important;
+}
+
+#pageContainer th,
+#pageContainer td {
+    display: table-cell !important;
+    vertical-align: middle;
+}
+
